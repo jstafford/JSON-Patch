@@ -69,20 +69,10 @@ var jsonpatch =
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var equalsOptions = { strict: true };
-var _equals = __webpack_require__(1);
-var areEquals = function (a, b) {
+const equalsOptions = { strict: true };
+const _equals = __webpack_require__(1);
+const areEquals = (a, b) => {
     return _equals(a, b, equalsOptions);
 };
 /**
@@ -127,19 +117,16 @@ function unescapePathComponent(path) {
     return path.replace(/~1/g, '/').replace(/~0/g, '~');
 }
 exports.unescapePathComponent = unescapePathComponent;
-var JsonPatchError = /** @class */ (function (_super) {
-    __extends(JsonPatchError, _super);
-    function JsonPatchError(message, name, index, operation, tree) {
-        var _this = _super.call(this, message) || this;
-        _this.message = message;
-        _this.name = name;
-        _this.index = index;
-        _this.operation = operation;
-        _this.tree = tree;
-        return _this;
+class JsonPatchError extends Error {
+    constructor(message, name, index, operation, tree) {
+        super(message);
+        this.message = message;
+        this.name = name;
+        this.index = index;
+        this.operation = operation;
+        this.tree = tree;
     }
-    return JsonPatchError;
-}(Error));
+}
 exports.JsonPatchError = JsonPatchError;
 /* We use a Javascript hash to store each
  function. Each hash entry (property) uses
@@ -148,7 +135,7 @@ exports.JsonPatchError = JsonPatchError;
  to its dedicated function in efficient way.
  */
 /* The operations applicable to an object */
-var objOps = {
+const objOps = {
     add: function (obj, key, document) {
         obj[key] = this.value;
         return { newDocument: document };
@@ -156,27 +143,27 @@ var objOps = {
     remove: function (obj, key, document) {
         var removed = obj[key];
         delete obj[key];
-        return { newDocument: document, removed: removed };
+        return { newDocument: document, removed };
     },
     replace: function (obj, key, document) {
         var removed = obj[key];
         obj[key] = this.value;
-        return { newDocument: document, removed: removed };
+        return { newDocument: document, removed };
     },
     move: function (obj, key, document) {
         /* in case move target overwrites an existing value,
         return the removed value, this can be taxing performance-wise,
         and is potentially unneeded */
-        var removed = getValueByPointer(document, this.path);
+        let removed = getValueByPointer(document, this.path);
         if (removed) {
             removed = deepClone(removed);
         }
-        var originalValue = applyOperation(document, { op: "remove", path: this.from }).removed;
+        const originalValue = applyOperation(document, { op: "remove", path: this.from }).removed;
         applyOperation(document, { op: "add", path: this.path, value: originalValue });
-        return { newDocument: document, removed: removed };
+        return { newDocument: document, removed };
     },
     copy: function (obj, key, document) {
-        var valueToCopy = getValueByPointer(document, this.from);
+        const valueToCopy = getValueByPointer(document, this.from);
         // enforce copy by value so further operations don't affect source (see issue #177)
         applyOperation(document, { op: "add", path: this.path, value: deepClone(valueToCopy) });
         return { newDocument: document };
@@ -208,7 +195,7 @@ var arrOps = {
     replace: function (arr, i, document) {
         var removed = arr[i];
         arr[i] = this.value;
-        return { newDocument: document, removed: removed };
+        return { newDocument: document, removed };
     },
     move: objOps.move,
     copy: objOps.copy,
@@ -246,7 +233,7 @@ exports.getValueByPointer = getValueByPointer;
 function applyOperation(document, operation) {
     /* ROOT OPERATIONS */
     if (operation.path === "") {
-        var returnValue = { newDocument: document };
+        let returnValue = { newDocument: document };
         if (operation.op === 'add') {
             returnValue.newDocument = operation.value;
             return returnValue;
@@ -285,13 +272,13 @@ function applyOperation(document, operation) {
         }
     } /* END ROOT OPERATIONS */
     else {
-        var path = operation.path || "";
-        var keys = path.split('/');
-        var obj = document;
-        var t = 1; //skip empty element - http://jsperf.com/to-shift-or-not-to-shift
-        var len = keys.length;
-        var existingPathFragment = undefined;
-        var key = void 0;
+        const path = operation.path || "";
+        const keys = path.split('/');
+        let obj = document;
+        let t = 1; //skip empty element - http://jsperf.com/to-shift-or-not-to-shift
+        let len = keys.length;
+        let existingPathFragment = undefined;
+        let key;
         while (true) {
             key = keys[t];
             t++;
@@ -306,7 +293,7 @@ function applyOperation(document, operation) {
                     }
                 }
                 if (t >= len) {
-                    var returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
+                    const returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
                     if (returnValue.test === false) {
                         throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
                     }
@@ -318,7 +305,7 @@ function applyOperation(document, operation) {
                     key = unescapePathComponent(key);
                 }
                 if (t >= len) {
-                    var returnValue = objOps[operation.op].call(operation, obj, key, document); // Apply patch
+                    const returnValue = objOps[operation.op].call(operation, obj, key, document); // Apply patch
                     if (returnValue.test === false) {
                         throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
                     }
@@ -342,8 +329,8 @@ exports.applyOperation = applyOperation;
  * @return An array of `{newDocument, result}` after the patch
  */
 function applyPatch(document, patch) {
-    var results = new Array(patch.length);
-    for (var i = 0, length_1 = patch.length; i < length_1; i++) {
+    const results = new Array(patch.length);
+    for (let i = 0, length = patch.length; i < length; i++) {
         results[i] = applyOperation(document, patch[i]);
         document = results[i].newDocument; // in case root was replaced
     }
