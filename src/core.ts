@@ -10,14 +10,55 @@ const _equals = require('deep-equal');
 const areEquals = (a: any, b: any): boolean => {
   return _equals(a, b, equalsOptions)
 }
-import { PatchError, _deepClone, isInteger, unescapePathComponent } from './helpers';
 
-export const JsonPatchError = PatchError;
-export const deepClone = _deepClone;
+/**
+* Deeply clone the object.
+* https://jsperf.com/deep-copy-vs-json-stringify-json-parse/25 (recursiveDeepCopy)
+* @param  {any} obj value to clone
+* @return {any} cloned obj
+*/
+export function deepClone(obj) {
+    switch (typeof obj) {
+        case "object":
+            return JSON.parse(JSON.stringify(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
+        case "undefined":
+            return null; //this is how JSON.stringify behaves for array items
+        default:
+            return obj; //no need to clone primitives
+    }
+}
 
-interface HTMLElement {
-  attachEvent: Function;
-  detachEvent: Function;
+//3x faster than cached /^\d+$/.test(str)
+export function isInteger(str: string): boolean {
+    var i = 0;
+    var len = str.length;
+    var charCode;
+    while (i < len) {
+        charCode = str.charCodeAt(i);
+        if (charCode >= 48 && charCode <= 57) {
+            i++;
+            continue;
+        }
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Unescapes a json pointer path
+ * @param path The escaped pointer
+ * @return The unescaped path
+ */
+export function unescapePathComponent(path: string): string {
+    return path.replace(/~1/g, '/').replace(/~0/g, '~');
+}
+
+export type JsonPatchErrorName = 'TEST_OPERATION_FAILED';
+
+export class JsonPatchError extends Error {
+    constructor(public message: string, public name: JsonPatchErrorName, public index?: number, public operation?: any, public tree?: any) {
+        super(message);
+    }
 }
 
 export type Operation = AddOperation<any> | RemoveOperation | ReplaceOperation<any> | MoveOperation | CopyOperation | TestOperation<any> | GetOperation<any>;
@@ -110,7 +151,7 @@ const objOps = {
     let removed = getValueByPointer(document, this.path);
 
     if (removed) {
-      removed = _deepClone(removed);
+      removed = deepClone(removed);
     }
 
     const originalValue = applyOperation(document,
@@ -127,7 +168,7 @@ const objOps = {
     const valueToCopy = getValueByPointer(document, this.from);
     // enforce copy by value so further operations don't affect source (see issue #177)
     applyOperation(document,
-      { op: "add", path: this.path, value: _deepClone(valueToCopy) }
+      { op: "add", path: this.path, value: deepClone(valueToCopy) }
     );
     return { newDocument: document }
   },
@@ -187,7 +228,7 @@ export function getValueByPointer(document: any, pointer: string): any {
  * Returns the {newDocument, result} of the operation.
  * It modifies the `document` and `operation` objects - it gets the values by reference.
  * If you would like to avoid touching your values, clone them:
- * `jsonpatch.applyOperation(document, jsonpatch._deepClone(operation))`.
+ * `jsonpatch.applyOperation(document, jsonpatch.deepClone(operation))`.
  *
  * @param document The document to patch
  * @param operation The operation to apply
@@ -281,7 +322,7 @@ export function applyOperation<T>(document: T, operation: Operation): OperationR
  * Returns the {newDocument, result} of the patch.
  * It modifies the `document` object and `patch` - it gets the values by reference.
  * If you would like to avoid touching your values, clone them:
- * `jsonpatch.applyPatch(document, jsonpatch._deepClone(patch))`.
+ * `jsonpatch.applyPatch(document, jsonpatch.deepClone(patch))`.
  *
  * @param document The document to patch
  * @param patch The patch to apply

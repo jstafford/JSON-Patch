@@ -65,87 +65,16 @@ var jsonpatch =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
-
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-/*!
- * https://github.com/Starcounter-Jack/JSON-Patch
- * (c) 2017 Joachim Wester
- * MIT license
- */
-/**
-* Deeply clone the object.
-* https://jsperf.com/deep-copy-vs-json-stringify-json-parse/25 (recursiveDeepCopy)
-* @param  {any} obj value to clone
-* @return {any} cloned obj
-*/
-function _deepClone(obj) {
-    switch (typeof obj) {
-        case "object":
-            return JSON.parse(JSON.stringify(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
-        case "undefined":
-            return null; //this is how JSON.stringify behaves for array items
-        default:
-            return obj; //no need to clone primitives
-    }
-}
-exports._deepClone = _deepClone;
-//3x faster than cached /^\d+$/.test(str)
-function isInteger(str) {
-    var i = 0;
-    var len = str.length;
-    var charCode;
-    while (i < len) {
-        charCode = str.charCodeAt(i);
-        if (charCode >= 48 && charCode <= 57) {
-            i++;
-            continue;
-        }
-        return false;
-    }
-    return true;
-}
-exports.isInteger = isInteger;
-/**
- * Unescapes a json pointer path
- * @param path The escaped pointer
- * @return The unescaped path
- */
-function unescapePathComponent(path) {
-    return path.replace(/~1/g, '/').replace(/~0/g, '~');
-}
-exports.unescapePathComponent = unescapePathComponent;
-var PatchError = (function (_super) {
-    __extends(PatchError, _super);
-    function PatchError(message, name, index, operation, tree) {
-        _super.call(this, message);
-        this.message = message;
-        this.name = name;
-        this.index = index;
-        this.operation = operation;
-        this.tree = tree;
-    }
-    return PatchError;
-}(Error));
-exports.PatchError = PatchError;
-
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var pSlice = Array.prototype.slice;
-var objectKeys = __webpack_require__(4);
-var isArguments = __webpack_require__(3);
+var objectKeys = __webpack_require__(3);
+var isArguments = __webpack_require__(2);
 
 var deepEqual = module.exports = function (actual, expected, opts) {
   if (!opts) opts = {};
@@ -240,17 +169,74 @@ function objEquiv(a, b, opts) {
 
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var equalsOptions = { strict: true };
-var _equals = __webpack_require__(1);
+var _equals = __webpack_require__(0);
 var areEquals = function (a, b) {
     return _equals(a, b, equalsOptions);
 };
-var helpers_1 = __webpack_require__(0);
-exports.JsonPatchError = helpers_1.PatchError;
-exports.deepClone = helpers_1._deepClone;
+/**
+* Deeply clone the object.
+* https://jsperf.com/deep-copy-vs-json-stringify-json-parse/25 (recursiveDeepCopy)
+* @param  {any} obj value to clone
+* @return {any} cloned obj
+*/
+function deepClone(obj) {
+    switch (typeof obj) {
+        case "object":
+            return JSON.parse(JSON.stringify(obj)); //Faster than ES5 clone - http://jsperf.com/deep-cloning-of-objects/5
+        case "undefined":
+            return null; //this is how JSON.stringify behaves for array items
+        default:
+            return obj; //no need to clone primitives
+    }
+}
+exports.deepClone = deepClone;
+//3x faster than cached /^\d+$/.test(str)
+function isInteger(str) {
+    var i = 0;
+    var len = str.length;
+    var charCode;
+    while (i < len) {
+        charCode = str.charCodeAt(i);
+        if (charCode >= 48 && charCode <= 57) {
+            i++;
+            continue;
+        }
+        return false;
+    }
+    return true;
+}
+exports.isInteger = isInteger;
+/**
+ * Unescapes a json pointer path
+ * @param path The escaped pointer
+ * @return The unescaped path
+ */
+function unescapePathComponent(path) {
+    return path.replace(/~1/g, '/').replace(/~0/g, '~');
+}
+exports.unescapePathComponent = unescapePathComponent;
+var JsonPatchError = (function (_super) {
+    __extends(JsonPatchError, _super);
+    function JsonPatchError(message, name, index, operation, tree) {
+        _super.call(this, message);
+        this.message = message;
+        this.name = name;
+        this.index = index;
+        this.operation = operation;
+        this.tree = tree;
+    }
+    return JsonPatchError;
+}(Error));
+exports.JsonPatchError = JsonPatchError;
 /* We use a Javascript hash to store each
  function. Each hash entry (property) uses
  the operation identifiers specified in rfc6902.
@@ -279,7 +265,7 @@ var objOps = {
         and is potentially unneeded */
         var removed = getValueByPointer(document, this.path);
         if (removed) {
-            removed = helpers_1._deepClone(removed);
+            removed = deepClone(removed);
         }
         var originalValue = applyOperation(document, { op: "remove", path: this.from }).removed;
         applyOperation(document, { op: "add", path: this.path, value: originalValue });
@@ -288,7 +274,7 @@ var objOps = {
     copy: function (obj, key, document) {
         var valueToCopy = getValueByPointer(document, this.from);
         // enforce copy by value so further operations don't affect source (see issue #177)
-        applyOperation(document, { op: "add", path: this.path, value: helpers_1._deepClone(valueToCopy) });
+        applyOperation(document, { op: "add", path: this.path, value: deepClone(valueToCopy) });
         return { newDocument: document };
     },
     test: function (obj, key, document) {
@@ -302,7 +288,7 @@ var objOps = {
 /* The operations applicable to an array. Many are the same as for the object */
 var arrOps = {
     add: function (arr, i, document) {
-        if (helpers_1.isInteger(i)) {
+        if (isInteger(i)) {
             arr.splice(i, 0, this.value);
         }
         else {
@@ -347,7 +333,7 @@ exports.getValueByPointer = getValueByPointer;
  * Returns the {newDocument, result} of the operation.
  * It modifies the `document` and `operation` objects - it gets the values by reference.
  * If you would like to avoid touching your values, clone them:
- * `jsonpatch.applyOperation(document, jsonpatch._deepClone(operation))`.
+ * `jsonpatch.applyOperation(document, jsonpatch.deepClone(operation))`.
  *
  * @param document The document to patch
  * @param operation The operation to apply
@@ -376,7 +362,7 @@ function applyOperation(document, operation) {
         else if (operation.op === 'test') {
             returnValue.test = areEquals(document, operation.value);
             if (returnValue.test === false) {
-                throw new exports.JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
+                throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
             }
             returnValue.newDocument = document;
             return returnValue;
@@ -411,26 +397,26 @@ function applyOperation(document, operation) {
                 }
                 else {
                     // only parse key when it's an integer for `arr.prop` to work
-                    if (helpers_1.isInteger(key)) {
+                    if (isInteger(key)) {
                         key = ~~key;
                     }
                 }
                 if (t >= len) {
                     var returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
                     if (returnValue.test === false) {
-                        throw new exports.JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
+                        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
                     }
                     return returnValue;
                 }
             }
             else {
                 if (key && key.indexOf('~') != -1) {
-                    key = helpers_1.unescapePathComponent(key);
+                    key = unescapePathComponent(key);
                 }
                 if (t >= len) {
                     var returnValue = objOps[operation.op].call(operation, obj, key, document); // Apply patch
                     if (returnValue.test === false) {
-                        throw new exports.JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
+                        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
                     }
                     return returnValue;
                 }
@@ -445,7 +431,7 @@ exports.applyOperation = applyOperation;
  * Returns the {newDocument, result} of the patch.
  * It modifies the `document` object and `patch` - it gets the values by reference.
  * If you would like to avoid touching your values, clone them:
- * `jsonpatch.applyPatch(document, jsonpatch._deepClone(patch))`.
+ * `jsonpatch.applyPatch(document, jsonpatch.deepClone(patch))`.
  *
  * @param document The document to patch
  * @param patch The patch to apply
@@ -473,7 +459,7 @@ exports.applyPatch = applyPatch;
 function applyReducer(document, operation) {
     var operationResult = applyOperation(document, operation);
     if (operationResult.test === false) {
-        throw new exports.JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
+        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
     }
     return operationResult.newDocument;
 }
@@ -481,7 +467,7 @@ exports.applyReducer = applyReducer;
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports) {
 
 var supportsArgumentsClass = (function(){
@@ -507,7 +493,7 @@ function unsupported(object){
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 exports = module.exports = typeof Object.keys === 'function'
