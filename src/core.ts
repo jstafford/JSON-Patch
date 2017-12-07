@@ -144,7 +144,7 @@ const objOps = {
 var arrOps = {
   add: function (arr, i, document) {
     if(isInteger(i)) {
-      arr.splice(i, 0, this.value); 
+      arr.splice(i, 0, this.value);
     } else { // array props
       arr[i] = this.value;
     }
@@ -192,10 +192,9 @@ export function getValueByPointer(document: any, pointer: string): any {
  * @param document The document to patch
  * @param operation The operation to apply
  * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
- * @param mutateDocument Whether to mutate the original document or clone it before applying
  * @return `{newDocument, result}` after the operation
  */
-export function applyOperation<T>(document: T, operation: Operation, validateOperation: boolean | Validator<T> = false, mutateDocument: boolean = true): OperationResult<T> {
+export function applyOperation<T>(document: T, operation: Operation, validateOperation: boolean | Validator<T> = false): OperationResult<T> {
   if (validateOperation) {
     if (typeof validateOperation == 'function') {
       validateOperation(operation, 0, document, operation.path);
@@ -244,9 +243,6 @@ export function applyOperation<T>(document: T, operation: Operation, validateOpe
     }
   } /* END ROOT OPERATIONS */
   else {
-    if (!mutateDocument) {
-      document = _deepClone(document);
-    }
     const path = operation.path || "";
     const keys = path.split('/');
     let obj = document;
@@ -328,17 +324,13 @@ export function applyOperation<T>(document: T, operation: Operation, validateOpe
  * @param document The document to patch
  * @param patch The patch to apply
  * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
- * @param mutateDocument Whether to mutate the original document or clone it before applying
  * @return An array of `{newDocument, result}` after the patch
  */
-export function applyPatch<T>(document: T, patch: Operation[], validateOperation?: boolean | Validator<T>, mutateDocument: boolean = true): PatchResult<T> {
+export function applyPatch<T>(document: T, patch: Operation[], validateOperation?: boolean | Validator<T>): PatchResult<T> {
   if(validateOperation) {
     if(!Array.isArray(patch)) {
       throw new JsonPatchError('Patch sequence must be an array', 'SEQUENCE_NOT_AN_ARRAY');
     }
-  }
-  if (!mutateDocument) {
-    document = _deepClone(document);
   }
   const results = new Array(patch.length) as PatchResult<T>;
 
