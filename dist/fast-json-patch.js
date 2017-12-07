@@ -277,9 +277,10 @@ function applyOperation(document, operation) {
         let obj = document;
         let t = 1; //skip empty element - http://jsperf.com/to-shift-or-not-to-shift
         let len = keys.length;
-        let existingPathFragment = undefined;
         let key;
-        while (true) {
+        let returnValue;
+        // walk path
+        while (t < len) {
             key = keys[t];
             t++;
             if (Array.isArray(obj)) {
@@ -292,28 +293,27 @@ function applyOperation(document, operation) {
                         key = ~~key;
                     }
                 }
-                if (t >= len) {
-                    const returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
-                    if (returnValue.test === false) {
-                        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-                    }
-                    return returnValue;
-                }
             }
             else {
                 if (key && key.indexOf('~') != -1) {
                     key = unescapePathComponent(key);
                 }
-                if (t >= len) {
-                    const returnValue = objOps[operation.op].call(operation, obj, key, document); // Apply patch
-                    if (returnValue.test === false) {
-                        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-                    }
-                    return returnValue;
-                }
             }
-            obj = obj[key];
+            if (t < len) {
+                obj = obj[key];
+            }
         }
+        // Apply patch
+        if (Array.isArray(obj)) {
+            returnValue = arrOps[operation.op].call(operation, obj, key, document);
+        }
+        else {
+            returnValue = objOps[operation.op].call(operation, obj, key, document);
+        }
+        if (returnValue.test === false) {
+            throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
+        }
+        return returnValue;
     }
 }
 exports.applyOperation = applyOperation;
