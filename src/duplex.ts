@@ -14,7 +14,7 @@ import { PatchError, _deepClone, isInteger, _objectKeys, escapePathComponent, un
 import { applyOperation, applyPatch, getValueByPointer, Operation } from './core';
 
 /* export all core functions */
-export { applyOperation, applyPatch, applyReducer, getValueByPointer, Operation, validate, validator, OperationResult } from './core';
+export { applyOperation, applyPatch, applyReducer, getValueByPointer, Operation, OperationResult } from './core';
 
 /* export some helpers */
 export { PatchError as JsonPatchError, _deepClone as deepClone, escapePathComponent, unescapePathComponent } from './helpers';
