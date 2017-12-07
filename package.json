@@ -42,9 +42,7 @@
     "test": "jasmine JASMINE_CONFIG_PATH=test/jasmine.json test/spec/jsonPatchTestsSpec.js test/spec/coreSpec.js test/spec/validateSpec.js",
     "bench": "node test/spec/coreBenchmark.js"
   },
-  "dependencies": {
-    "deep-equal": "^1.0.1"
-  },
+  "dependencies": {},
   "eslintConfig": {
     "extends": "eslint:recommended",
     "parserOptions": {
