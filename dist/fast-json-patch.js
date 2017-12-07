@@ -447,23 +447,6 @@ function applyPatch(document, patch) {
     return results;
 }
 exports.applyPatch = applyPatch;
-/**
- * Apply a single JSON Patch Operation on a JSON document.
- * Returns the updated document.
- * Suitable as a reducer.
- *
- * @param document The document to patch
- * @param operation The operation to apply
- * @return The updated document
- */
-function applyReducer(document, operation) {
-    var operationResult = applyOperation(document, operation);
-    if (operationResult.test === false) {
-        throw new JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
-    }
-    return operationResult.newDocument;
-}
-exports.applyReducer = applyReducer;
 
 
 /***/ }),

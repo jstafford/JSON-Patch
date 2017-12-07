@@ -45,22 +45,6 @@ describe('jsonpatch.getValueByPointer', function() {
     }]);
   });
 });
-describe('jsonpatch.applyReducer - using with Array#reduce', function() {
-  it('should work with Array.reduce on array of patches', function() {
-    var obj = {
-      hello: 'world'
-    };
-    var patch = [
-      { op: 'replace', path: '/hello', value: 1 },
-      { op: 'add', path: '/bye', value: { testing: 'isGood' } }
-    ];
-    obj = patch.reduce(jsonpatch.applyReducer, obj);
-    expect(obj).toEqual({
-      hello: 1,
-      bye: { testing: 'isGood' }
-    });
-  });
-});
 describe('root replacement with applyOperation', function() {
   describe('_get operation', function () {
     it('should get root value', function() {
