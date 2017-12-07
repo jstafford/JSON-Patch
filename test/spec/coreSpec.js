@@ -2,9 +2,6 @@ var obj;
 if (typeof jsonpatch === 'undefined') {
   jsonpatch = require('./../../lib/core');
 }
-if (typeof _ === 'undefined') {
-  _ = require('./../lib/underscore.min.js');
-}
 
 describe('jsonpatch.getValueByPointer', function() {
   it('should retrieve values by JSON pointer from tree - deep object', function() {
