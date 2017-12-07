@@ -10,7 +10,7 @@ const _equals = require('deep-equal');
 const areEquals = (a: any, b: any): boolean => {
   return _equals(a, b, equalsOptions)
 }
-import { PatchError, _deepClone, isInteger, unescapePathComponent, hasUndefined } from './helpers';
+import { PatchError, _deepClone, isInteger, unescapePathComponent } from './helpers';
 
 export const JsonPatchError = PatchError;
 export const deepClone = _deepClone;
