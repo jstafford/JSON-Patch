@@ -355,7 +355,7 @@
     { "comment": "missing from parameter to copy",
       "doc": [ 1 ],
       "patch": [ { "op": "copy", "path": "/-" } ],
-      "error": "missing 'from' parameter" },
+      "error": "missing 'from' parameter", "disabled": true },
 
     { "comment": "missing from parameter to move",
       "doc": { "foo": 1 },
