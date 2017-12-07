@@ -1,5 +1,5 @@
 if (typeof jsonpatch === 'undefined') {
-   jsonpatch = require('./../../lib/duplex');
+   jsonpatch = require('./../../lib/core');
 }
 if (typeof Benchmark === 'undefined') {
     var Benchmark = require('benchmark');

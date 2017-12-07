@@ -65,7 +65,7 @@ var jsonpatch =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -237,8 +237,108 @@ exports.PatchError = PatchError;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var pSlice = Array.prototype.slice;
+var objectKeys = __webpack_require__(4);
+var isArguments = __webpack_require__(3);
+
+var deepEqual = module.exports = function (actual, expected, opts) {
+  if (!opts) opts = {};
+  // 7.1. All identical values are equivalent, as determined by ===.
+  if (actual === expected) {
+    return true;
+
+  } else if (actual instanceof Date && expected instanceof Date) {
+    return actual.getTime() === expected.getTime();
+
+  // 7.3. Other pairs that do not both pass typeof value == 'object',
+  // equivalence is determined by ==.
+  } else if (!actual || !expected || typeof actual != 'object' && typeof expected != 'object') {
+    return opts.strict ? actual === expected : actual == expected;
+
+  // 7.4. For all other Object pairs, including Array objects, equivalence is
+  // determined by having the same number of owned properties (as verified
+  // with Object.prototype.hasOwnProperty.call), the same set of keys
+  // (although not necessarily the same order), equivalent values for every
+  // corresponding key, and an identical 'prototype' property. Note: this
+  // accounts for both named and indexed properties on Arrays.
+  } else {
+    return objEquiv(actual, expected, opts);
+  }
+}
+
+function isUndefinedOrNull(value) {
+  return value === null || value === undefined;
+}
+
+function isBuffer (x) {
+  if (!x || typeof x !== 'object' || typeof x.length !== 'number') return false;
+  if (typeof x.copy !== 'function' || typeof x.slice !== 'function') {
+    return false;
+  }
+  if (x.length > 0 && typeof x[0] !== 'number') return false;
+  return true;
+}
+
+function objEquiv(a, b, opts) {
+  var i, key;
+  if (isUndefinedOrNull(a) || isUndefinedOrNull(b))
+    return false;
+  // an identical 'prototype' property.
+  if (a.prototype !== b.prototype) return false;
+  //~~~I've managed to break Object.keys through screwy arguments passing.
+  //   Converting to array solves the problem.
+  if (isArguments(a)) {
+    if (!isArguments(b)) {
+      return false;
+    }
+    a = pSlice.call(a);
+    b = pSlice.call(b);
+    return deepEqual(a, b, opts);
+  }
+  if (isBuffer(a)) {
+    if (!isBuffer(b)) {
+      return false;
+    }
+    if (a.length !== b.length) return false;
+    for (i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+  try {
+    var ka = objectKeys(a),
+        kb = objectKeys(b);
+  } catch (e) {//happens when one is a string literal and the other isn't
+    return false;
+  }
+  // having the same number of owned properties (keys incorporates
+  // hasOwnProperty)
+  if (ka.length != kb.length)
+    return false;
+  //the same set of keys (although not necessarily the same order),
+  ka.sort();
+  kb.sort();
+  //~~~cheap key test
+  for (i = ka.length - 1; i >= 0; i--) {
+    if (ka[i] != kb[i])
+      return false;
+  }
+  //equivalent values for every corresponding key, and
+  //~~~possibly expensive deep test
+  for (i = ka.length - 1; i >= 0; i--) {
+    key = ka[i];
+    if (!deepEqual(a[key], b[key], opts)) return false;
+  }
+  return typeof a === typeof b;
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var equalsOptions = { strict: true };
-var _equals = __webpack_require__(2);
+var _equals = __webpack_require__(1);
 var areEquals = function (a, b) {
     return _equals(a, b, equalsOptions);
 };
@@ -345,21 +445,9 @@ exports.getValueByPointer = getValueByPointer;
  *
  * @param document The document to patch
  * @param operation The operation to apply
- * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
- * @param mutateDocument Whether to mutate the original document or clone it before applying
  * @return `{newDocument, result}` after the operation
  */
-function applyOperation(document, operation, validateOperation, mutateDocument) {
-    if (validateOperation === void 0) { validateOperation = false; }
-    if (mutateDocument === void 0) { mutateDocument = true; }
-    if (validateOperation) {
-        if (typeof validateOperation == 'function') {
-            validateOperation(operation, 0, document, operation.path);
-        }
-        else {
-            validator(operation, 0);
-        }
-    }
+function applyOperation(document, operation) {
     /* ROOT OPERATIONS */
     if (operation.path === "") {
         var returnValue = { newDocument: document };
@@ -397,18 +485,10 @@ function applyOperation(document, operation, validateOperation, mutateDocument) 
             return returnValue;
         }
         else {
-            if (validateOperation) {
-                throw new exports.JsonPatchError('Operation `op` property is not one of operations defined in RFC-6902', 'OPERATION_OP_INVALID', 0, operation, document);
-            }
-            else {
-                return returnValue;
-            }
+            return returnValue;
         }
     } /* END ROOT OPERATIONS */
     else {
-        if (!mutateDocument) {
-            document = helpers_1._deepClone(document);
-        }
         var path = operation.path || "";
         var keys = path.split('/');
         var obj = document;
@@ -416,45 +496,20 @@ function applyOperation(document, operation, validateOperation, mutateDocument) 
         var len = keys.length;
         var existingPathFragment = undefined;
         var key = void 0;
-        var validateFunction = void 0;
-        if (typeof validateOperation == 'function') {
-            validateFunction = validateOperation;
-        }
-        else {
-            validateFunction = validator;
-        }
         while (true) {
             key = keys[t];
-            if (validateOperation) {
-                if (existingPathFragment === undefined) {
-                    if (obj[key] === undefined) {
-                        existingPathFragment = keys.slice(0, t).join('/');
-                    }
-                    else if (t == len - 1) {
-                        existingPathFragment = operation.path;
-                    }
-                    if (existingPathFragment !== undefined) {
-                        validateFunction(operation, 0, document, existingPathFragment);
-                    }
-                }
-            }
             t++;
             if (Array.isArray(obj)) {
                 if (key === '-') {
                     key = obj.length;
                 }
                 else {
-                    if (validateOperation && !helpers_1.isInteger(key)) {
-                        throw new exports.JsonPatchError("Expected an unsigned base-10 integer value, making the new referenced value the array element with the zero-based index", "OPERATION_PATH_ILLEGAL_ARRAY_INDEX", 0, operation.path, operation);
-                    } // only parse key when it's an integer for `arr.prop` to work
-                    else if (helpers_1.isInteger(key)) {
+                    // only parse key when it's an integer for `arr.prop` to work
+                    if (helpers_1.isInteger(key)) {
                         key = ~~key;
                     }
                 }
                 if (t >= len) {
-                    if (validateOperation && operation.op === "add" && key > obj.length) {
-                        throw new exports.JsonPatchError("The specified index MUST NOT be greater than the number of elements in the array", "OPERATION_VALUE_OUT_OF_BOUNDS", 0, operation.path, operation);
-                    }
                     var returnValue = arrOps[operation.op].call(operation, obj, key, document); // Apply patch
                     if (returnValue.test === false) {
                         throw new exports.JsonPatchError("Test operation failed", 'TEST_OPERATION_FAILED', 0, operation, document);
@@ -488,23 +543,12 @@ exports.applyOperation = applyOperation;
  *
  * @param document The document to patch
  * @param patch The patch to apply
- * @param validateOperation `false` is without validation, `true` to use default jsonpatch's validation, or you can pass a `validateOperation` callback to be used for validation.
- * @param mutateDocument Whether to mutate the original document or clone it before applying
  * @return An array of `{newDocument, result}` after the patch
  */
-function applyPatch(document, patch, validateOperation, mutateDocument) {
-    if (mutateDocument === void 0) { mutateDocument = true; }
-    if (validateOperation) {
-        if (!Array.isArray(patch)) {
-            throw new exports.JsonPatchError('Patch sequence must be an array', 'SEQUENCE_NOT_AN_ARRAY');
-        }
-    }
-    if (!mutateDocument) {
-        document = helpers_1._deepClone(document);
-    }
+function applyPatch(document, patch) {
     var results = new Array(patch.length);
     for (var i = 0, length_1 = patch.length; i < length_1; i++) {
-        results[i] = applyOperation(document, patch[i], validateOperation);
+        results[i] = applyOperation(document, patch[i]);
         document = results[i].newDocument; // in case root was replaced
     }
     results.newDocument = document;
@@ -528,416 +572,10 @@ function applyReducer(document, operation) {
     return operationResult.newDocument;
 }
 exports.applyReducer = applyReducer;
-/**
- * Validates a single operation. Called from `jsonpatch.validate`. Throws `JsonPatchError` in case of an error.
- * @param {object} operation - operation object (patch)
- * @param {number} index - index of operation in the sequence
- * @param {object} [document] - object where the operation is supposed to be applied
- * @param {string} [existingPathFragment] - comes along with `document`
- */
-function validator(operation, index, document, existingPathFragment) {
-    if (typeof operation !== 'object' || operation === null || Array.isArray(operation)) {
-        throw new exports.JsonPatchError('Operation is not an object', 'OPERATION_NOT_AN_OBJECT', index, operation, document);
-    }
-    else if (!objOps[operation.op]) {
-        throw new exports.JsonPatchError('Operation `op` property is not one of operations defined in RFC-6902', 'OPERATION_OP_INVALID', index, operation, document);
-    }
-    else if (typeof operation.path !== 'string') {
-        throw new exports.JsonPatchError('Operation `path` property is not a string', 'OPERATION_PATH_INVALID', index, operation, document);
-    }
-    else if (operation.path.indexOf('/') !== 0 && operation.path.length > 0) {
-        // paths that aren't empty string should start with "/"
-        throw new exports.JsonPatchError('Operation `path` property must start with "/"', 'OPERATION_PATH_INVALID', index, operation, document);
-    }
-    else if ((operation.op === 'move' || operation.op === 'copy') && typeof operation.from !== 'string') {
-        throw new exports.JsonPatchError('Operation `from` property is not present (applicable in `move` and `copy` operations)', 'OPERATION_FROM_REQUIRED', index, operation, document);
-    }
-    else if ((operation.op === 'add' || operation.op === 'replace' || operation.op === 'test') && operation.value === undefined) {
-        throw new exports.JsonPatchError('Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)', 'OPERATION_VALUE_REQUIRED', index, operation, document);
-    }
-    else if ((operation.op === 'add' || operation.op === 'replace' || operation.op === 'test') && helpers_1.hasUndefined(operation.value)) {
-        throw new exports.JsonPatchError('Operation `value` property is not present (applicable in `add`, `replace` and `test` operations)', 'OPERATION_VALUE_CANNOT_CONTAIN_UNDEFINED', index, operation, document);
-    }
-    else if (document) {
-        if (operation.op == "add") {
-            var pathLen = operation.path.split("/").length;
-            var existingPathLen = existingPathFragment.split("/").length;
-            if (pathLen !== existingPathLen + 1 && pathLen !== existingPathLen) {
-                throw new exports.JsonPatchError('Cannot perform an `add` operation at the desired path', 'OPERATION_PATH_CANNOT_ADD', index, operation, document);
-            }
-        }
-        else if (operation.op === 'replace' || operation.op === 'remove' || operation.op === '_get') {
-            if (operation.path !== existingPathFragment) {
-                throw new exports.JsonPatchError('Cannot perform the operation at a path that does not exist', 'OPERATION_PATH_UNRESOLVABLE', index, operation, document);
-            }
-        }
-        else if (operation.op === 'move' || operation.op === 'copy') {
-            var existingValue = { op: "_get", path: operation.from, value: undefined };
-            var error = validate([existingValue], document);
-            if (error && error.name === 'OPERATION_PATH_UNRESOLVABLE') {
-                throw new exports.JsonPatchError('Cannot perform the operation from a path that does not exist', 'OPERATION_FROM_UNRESOLVABLE', index, operation, document);
-            }
-        }
-    }
-}
-exports.validator = validator;
-/**
- * Validates a sequence of operations. If `document` parameter is provided, the sequence is additionally validated against the object document.
- * If error is encountered, returns a JsonPatchError object
- * @param sequence
- * @param document
- * @returns {JsonPatchError|undefined}
- */
-function validate(sequence, document, externalValidator) {
-    try {
-        if (!Array.isArray(sequence)) {
-            throw new exports.JsonPatchError('Patch sequence must be an array', 'SEQUENCE_NOT_AN_ARRAY');
-        }
-        if (document) {
-            //clone document and sequence so that we can safely try applying operations
-            applyPatch(helpers_1._deepClone(document), helpers_1._deepClone(sequence), externalValidator || true);
-        }
-        else {
-            externalValidator = externalValidator || validator;
-            for (var i = 0; i < sequence.length; i++) {
-                externalValidator(sequence[i], i, document, undefined);
-            }
-        }
-    }
-    catch (e) {
-        if (e instanceof exports.JsonPatchError) {
-            return e;
-        }
-        else {
-            throw e;
-        }
-    }
-}
-exports.validate = validate;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pSlice = Array.prototype.slice;
-var objectKeys = __webpack_require__(5);
-var isArguments = __webpack_require__(4);
-
-var deepEqual = module.exports = function (actual, expected, opts) {
-  if (!opts) opts = {};
-  // 7.1. All identical values are equivalent, as determined by ===.
-  if (actual === expected) {
-    return true;
-
-  } else if (actual instanceof Date && expected instanceof Date) {
-    return actual.getTime() === expected.getTime();
-
-  // 7.3. Other pairs that do not both pass typeof value == 'object',
-  // equivalence is determined by ==.
-  } else if (!actual || !expected || typeof actual != 'object' && typeof expected != 'object') {
-    return opts.strict ? actual === expected : actual == expected;
-
-  // 7.4. For all other Object pairs, including Array objects, equivalence is
-  // determined by having the same number of owned properties (as verified
-  // with Object.prototype.hasOwnProperty.call), the same set of keys
-  // (although not necessarily the same order), equivalent values for every
-  // corresponding key, and an identical 'prototype' property. Note: this
-  // accounts for both named and indexed properties on Arrays.
-  } else {
-    return objEquiv(actual, expected, opts);
-  }
-}
-
-function isUndefinedOrNull(value) {
-  return value === null || value === undefined;
-}
-
-function isBuffer (x) {
-  if (!x || typeof x !== 'object' || typeof x.length !== 'number') return false;
-  if (typeof x.copy !== 'function' || typeof x.slice !== 'function') {
-    return false;
-  }
-  if (x.length > 0 && typeof x[0] !== 'number') return false;
-  return true;
-}
-
-function objEquiv(a, b, opts) {
-  var i, key;
-  if (isUndefinedOrNull(a) || isUndefinedOrNull(b))
-    return false;
-  // an identical 'prototype' property.
-  if (a.prototype !== b.prototype) return false;
-  //~~~I've managed to break Object.keys through screwy arguments passing.
-  //   Converting to array solves the problem.
-  if (isArguments(a)) {
-    if (!isArguments(b)) {
-      return false;
-    }
-    a = pSlice.call(a);
-    b = pSlice.call(b);
-    return deepEqual(a, b, opts);
-  }
-  if (isBuffer(a)) {
-    if (!isBuffer(b)) {
-      return false;
-    }
-    if (a.length !== b.length) return false;
-    for (i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  }
-  try {
-    var ka = objectKeys(a),
-        kb = objectKeys(b);
-  } catch (e) {//happens when one is a string literal and the other isn't
-    return false;
-  }
-  // having the same number of owned properties (keys incorporates
-  // hasOwnProperty)
-  if (ka.length != kb.length)
-    return false;
-  //the same set of keys (although not necessarily the same order),
-  ka.sort();
-  kb.sort();
-  //~~~cheap key test
-  for (i = ka.length - 1; i >= 0; i--) {
-    if (ka[i] != kb[i])
-      return false;
-  }
-  //equivalent values for every corresponding key, and
-  //~~~possibly expensive deep test
-  for (i = ka.length - 1; i >= 0; i--) {
-    key = ka[i];
-    if (!deepEqual(a[key], b[key], opts)) return false;
-  }
-  return typeof a === typeof b;
-}
 
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var equalsOptions = { strict: true };
-var _equals = __webpack_require__(2);
-var areEquals = function (a, b) {
-    return _equals(a, b, equalsOptions);
-};
-var helpers_1 = __webpack_require__(0);
-var core_1 = __webpack_require__(1);
-/* export all core functions */
-var core_2 = __webpack_require__(1);
-exports.applyOperation = core_2.applyOperation;
-exports.applyPatch = core_2.applyPatch;
-exports.applyReducer = core_2.applyReducer;
-exports.getValueByPointer = core_2.getValueByPointer;
-exports.validate = core_2.validate;
-exports.validator = core_2.validator;
-/* export some helpers */
-var helpers_2 = __webpack_require__(0);
-exports.JsonPatchError = helpers_2.PatchError;
-exports.deepClone = helpers_2._deepClone;
-exports.escapePathComponent = helpers_2.escapePathComponent;
-exports.unescapePathComponent = helpers_2.unescapePathComponent;
-var beforeDict = [];
-var Mirror = (function () {
-    function Mirror(obj) {
-        this.observers = [];
-        this.obj = obj;
-    }
-    return Mirror;
-}());
-var ObserverInfo = (function () {
-    function ObserverInfo(callback, observer) {
-        this.callback = callback;
-        this.observer = observer;
-    }
-    return ObserverInfo;
-}());
-function getMirror(obj) {
-    for (var i = 0, length = beforeDict.length; i < length; i++) {
-        if (beforeDict[i].obj === obj) {
-            return beforeDict[i];
-        }
-    }
-}
-function getObserverFromMirror(mirror, callback) {
-    for (var j = 0, length = mirror.observers.length; j < length; j++) {
-        if (mirror.observers[j].callback === callback) {
-            return mirror.observers[j].observer;
-        }
-    }
-}
-function removeObserverFromMirror(mirror, observer) {
-    for (var j = 0, length = mirror.observers.length; j < length; j++) {
-        if (mirror.observers[j].observer === observer) {
-            mirror.observers.splice(j, 1);
-            return;
-        }
-    }
-}
-/**
- * Detach an observer from an object
- */
-function unobserve(root, observer) {
-    observer.unobserve();
-}
-exports.unobserve = unobserve;
-/**
- * Observes changes made to an object, which can then be retrieved using generate
- */
-function observe(obj, callback) {
-    var patches = [];
-    var root = obj;
-    var observer;
-    var mirror = getMirror(obj);
-    if (!mirror) {
-        mirror = new Mirror(obj);
-        beforeDict.push(mirror);
-    }
-    else {
-        observer = getObserverFromMirror(mirror, callback);
-    }
-    if (observer) {
-        return observer;
-    }
-    observer = {};
-    mirror.value = helpers_1._deepClone(obj);
-    if (callback) {
-        observer.callback = callback;
-        observer.next = null;
-        var dirtyCheck = function () {
-            generate(observer);
-        };
-        var fastCheck = function () {
-            clearTimeout(observer.next);
-            observer.next = setTimeout(dirtyCheck);
-        };
-        if (typeof window !== 'undefined') {
-            if (window.addEventListener) {
-                window.addEventListener('mouseup', fastCheck);
-                window.addEventListener('keyup', fastCheck);
-                window.addEventListener('mousedown', fastCheck);
-                window.addEventListener('keydown', fastCheck);
-                window.addEventListener('change', fastCheck);
-            }
-            else {
-                document.documentElement.attachEvent('onmouseup', fastCheck);
-                document.documentElement.attachEvent('onkeyup', fastCheck);
-                document.documentElement.attachEvent('onmousedown', fastCheck);
-                document.documentElement.attachEvent('onkeydown', fastCheck);
-                document.documentElement.attachEvent('onchange', fastCheck);
-            }
-        }
-    }
-    observer.patches = patches;
-    observer.object = obj;
-    observer.unobserve = function () {
-        generate(observer);
-        clearTimeout(observer.next);
-        removeObserverFromMirror(mirror, observer);
-        if (typeof window !== 'undefined') {
-            if (window.removeEventListener) {
-                window.removeEventListener('mouseup', fastCheck);
-                window.removeEventListener('keyup', fastCheck);
-                window.removeEventListener('mousedown', fastCheck);
-                window.removeEventListener('keydown', fastCheck);
-            }
-            else {
-                document.documentElement.detachEvent('onmouseup', fastCheck);
-                document.documentElement.detachEvent('onkeyup', fastCheck);
-                document.documentElement.detachEvent('onmousedown', fastCheck);
-                document.documentElement.detachEvent('onkeydown', fastCheck);
-            }
-        }
-    };
-    mirror.observers.push(new ObserverInfo(callback, observer));
-    return observer;
-}
-exports.observe = observe;
-/**
- * Generate an array of patches from an observer
- */
-function generate(observer) {
-    var mirror;
-    for (var i = 0, length = beforeDict.length; i < length; i++) {
-        if (beforeDict[i].obj === observer.object) {
-            mirror = beforeDict[i];
-            break;
-        }
-    }
-    _generate(mirror.value, observer.object, observer.patches, "");
-    if (observer.patches.length) {
-        core_1.applyPatch(mirror.value, observer.patches);
-    }
-    var temp = observer.patches;
-    if (temp.length > 0) {
-        observer.patches = [];
-        if (observer.callback) {
-            observer.callback(temp);
-        }
-    }
-    return temp;
-}
-exports.generate = generate;
-// Dirty check if obj is different from mirror, generate patches and update mirror
-function _generate(mirror, obj, patches, path) {
-    if (obj === mirror) {
-        return;
-    }
-    if (typeof obj.toJSON === "function") {
-        obj = obj.toJSON();
-    }
-    var newKeys = helpers_1._objectKeys(obj);
-    var oldKeys = helpers_1._objectKeys(mirror);
-    var changed = false;
-    var deleted = false;
-    //if ever "move" operation is implemented here, make sure this test runs OK: "should not generate the same patch twice (move)"
-    for (var t = oldKeys.length - 1; t >= 0; t--) {
-        var key = oldKeys[t];
-        var oldVal = mirror[key];
-        if (helpers_1.hasOwnProperty(obj, key) && !(obj[key] === undefined && oldVal !== undefined && Array.isArray(obj) === false)) {
-            var newVal = obj[key];
-            if (typeof oldVal == "object" && oldVal != null && typeof newVal == "object" && newVal != null) {
-                _generate(oldVal, newVal, patches, path + "/" + helpers_1.escapePathComponent(key));
-            }
-            else {
-                if (oldVal !== newVal) {
-                    changed = true;
-                    patches.push({ op: "replace", path: path + "/" + helpers_1.escapePathComponent(key), value: helpers_1._deepClone(newVal) });
-                }
-            }
-        }
-        else {
-            patches.push({ op: "remove", path: path + "/" + helpers_1.escapePathComponent(key) });
-            deleted = true; // property has been deleted
-        }
-    }
-    if (!deleted && newKeys.length == oldKeys.length) {
-        return;
-    }
-    for (var t = 0; t < newKeys.length; t++) {
-        var key = newKeys[t];
-        if (!helpers_1.hasOwnProperty(mirror, key) && obj[key] !== undefined) {
-            patches.push({ op: "add", path: path + "/" + helpers_1.escapePathComponent(key), value: helpers_1._deepClone(obj[key]) });
-        }
-    }
-}
-/**
- * Create an array of patches from the differences in two objects
- */
-function compare(tree1, tree2) {
-    var patches = [];
-    _generate(tree1, tree2, patches, '');
-    return patches;
-}
-exports.compare = compare;
-
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports) {
 
 var supportsArgumentsClass = (function(){
@@ -963,7 +601,7 @@ function unsupported(object){
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports) {
 
 exports = module.exports = typeof Object.keys === 'function'

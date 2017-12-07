@@ -1,7 +1,7 @@
 {
   "name": "fast-json-patch",
   "version": "2.0.6",
-  "description": "Fast implementation of JSON-Patch (RFC-6902) with duplex (observe changes) capabilities",
+  "description": "Fast implementation of JSON-Patch (RFC-6902)",
   "homepage": "https://github.com/Starcounter-Jack/JSON-Patch",
   "keywords": [
     "json",
@@ -22,8 +22,8 @@
     "url": "http://www.starcounter.com/"
   },
   "license": "MIT",
-  "main": "lib/duplex.js",
-  "typings": "lib/duplex.d.ts",
+  "main": "lib/core.js",
+  "typings": "lib/core.d.ts",
   "engines": {
     "node": ">= 0.4.0"
   },
@@ -43,12 +43,9 @@
     "version": "tsc && webpack && git add -A",
     "build": "tsc && webpack",
     "tsc-watch": "tsc -w",
-    "test": "npm run tsc && npm run test-core && npm run test-duplex",
-    "test-duplex": "jasmine DUPLEX=yes JASMINE_CONFIG_PATH=test/jasmine.json",
-    "test-core": "jasmine  DUPLEX=no JASMINE_CONFIG_PATH=test/jasmine.json test/spec/jsonPatchTestsSpec.js test/spec/coreSpec.js test/spec/validateSpec.js",
-    "bench": "npm run bench-core && npm run bench-duplex",
-    "bench-core": "node test/spec/coreBenchmark.js",
-    "bench-duplex": "node test/spec/coreBenchmark.js DUPLEX=yes && node test/spec/duplexBenchmark.js"
+    "test": "npm run tsc && npm run test-core",
+    "test-core": "jasmine JASMINE_CONFIG_PATH=test/jasmine.json test/spec/jsonPatchTestsSpec.js test/spec/coreSpec.js test/spec/validateSpec.js",
+    "bench": "node test/spec/coreBenchmark.js"
   },
   "dependencies": {
     "deep-equal": "^1.0.1"

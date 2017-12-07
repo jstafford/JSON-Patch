@@ -4,7 +4,7 @@ const package = require('./package.json');
 
 module.exports = [
   {
-    entry: './lib/duplex.js',
+    entry: './lib/core.js',
     output: {
       filename: './dist/fast-json-patch.js',
       library: 'jsonpatch',
@@ -18,7 +18,7 @@ module.exports = [
     ]
   },
   {
-    entry: './lib/duplex.js',
+    entry: './lib/core.js',
     output: {
       filename: './dist/fast-json-patch.min.js',
       library: 'jsonpatch',
