@@ -1,5 +1,5 @@
 var webpack = require('webpack');
-const BabiliPlugin = require('babili-webpack-plugin');
+const BabiliPlugin = require('babel-minify-webpack-plugin');
 const package = require('./package.json');
 
 module.exports = [
