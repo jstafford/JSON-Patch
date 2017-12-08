@@ -1,45 +1,6 @@
 const jsonpatch = require('./../../lib/core');
 var obj;
 
-describe('jsonpatch.getValueByPointer', function() {
-  it('should retrieve values by JSON pointer from tree - deep object', function() {
-    var obj = {
-      person: {name: 'Marilyn'}
-    };
-    var name = jsonpatch.getValueByPointer(obj, '/person/name')
-    expect(name).toEqual('Marilyn');
-  });
-
-  it('should retrieve values by JSON pointer from tree - deep array', function() {
-    var obj = {
-      people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-    };
-    var name = jsonpatch.getValueByPointer(obj, '/people/1/name')
-    expect(name).toEqual('Monroe');
-  });
-
-  it('should retrieve values by JSON pointer from tree - root object', function() {
-    var obj = {
-      people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-    };
-    var retrievedObject = jsonpatch.getValueByPointer(obj, '');
-
-    expect(retrievedObject).toEqual({
-      people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-    });
-  });
-
-  it('should retrieve values by JSON pointer from tree - root array', function() {
-    var obj = [{
-      people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-    }];
-    var retrievedObject = jsonpatch.getValueByPointer(obj, '');
-
-    expect(retrievedObject).toEqual([{
-      people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-    }]);
-  });
-});
 describe('root replacement with applyPatch', function() {
   describe('_get operation', function () {
     it('should get root value', function() {
@@ -461,7 +422,6 @@ describe('root replacement with applyPatch', function() {
     });
   });
 });
-/* this is just a copy-paste of original specs, but with using applyOperation, to test for non-root patches */
 describe('core - using applyPatch', function() {
   it('should apply add', function() {
     obj = {
