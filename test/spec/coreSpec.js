@@ -2,32 +2,6 @@ const jsonpatch = require('./../../lib/core');
 var obj;
 
 describe('root replacement with applyPatch', function() {
-  describe('_get operation', function () {
-    it('should get root value', function() {
-      var obj = [{
-        people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-      }];
-
-      var patch = {op: '_get', path: ''};
-
-      jsonpatch.applyPatch(obj, [patch]);
-
-      expect(patch.value).toEqual([{
-        people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-      }]);
-    });
-    it('should get deep value', function() {
-      var obj = {
-        people: [{name: 'Marilyn'}, {name: 'Monroe'}]
-      };
-
-      var patch = {op: '_get', path: '/people/1/name'};
-
-      jsonpatch.applyPatch(obj, [patch]);
-
-      expect(patch.value).toEqual('Monroe');
-    });
-  });
   describe('add operation', function() {
     it('should `add` an object (on a json document of type object)) - in place', function() {
       var obj = {
