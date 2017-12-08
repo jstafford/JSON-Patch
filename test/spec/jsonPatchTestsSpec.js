@@ -47,7 +47,7 @@ describe('json-patch-tests', function() {
         if (test.expected) {
           it('should succeed: ' + testName, function() {
             const results = jsonpatch.applyPatch(test.doc, test.patch, true);
-            test.doc = results.newDocument;
+            test.doc = results;
             expect(test.doc).toEqual(test.expected);
           });
         } else if (test.error || test.patch[0].op === 'test') {

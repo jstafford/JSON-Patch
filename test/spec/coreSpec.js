@@ -39,7 +39,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'universe'
         }
-      }]).newDocument;
+      }]);
 
       expect(newObj).toEqual({
         hello: 'universe'
@@ -55,7 +55,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'universe'
         }
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -72,7 +72,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'universe'
         }
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -91,7 +91,7 @@ describe('root replacement with applyPatch', function() {
             hello: 'universe'
           }
         ]
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -112,7 +112,7 @@ describe('root replacement with applyPatch', function() {
             hello: 'universe'
           }
         ]
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -126,7 +126,7 @@ describe('root replacement with applyPatch', function() {
         op: 'add',
         path: '/prop',
         value: 'arrayProp'
-      }]).newDocument;
+      }]);
 
       expect(newObj.prop).toEqual('arrayProp');
     });
@@ -138,7 +138,7 @@ describe('root replacement with applyPatch', function() {
         op: 'replace',
         path: '/prop',
         value: 'arrayProp'
-      }]).newDocument;
+      }]);
 
       expect(newObj.prop).toEqual('arrayProp');
     });
@@ -154,7 +154,7 @@ describe('root replacement with applyPatch', function() {
             hello: 'universe'
           }
         ]
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -169,7 +169,7 @@ describe('root replacement with applyPatch', function() {
         op: 'add',
         path: '',
         value: 1
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(1);
     });
     it('should `add` with a primitive (on a json document of type array) - and return', function() {
@@ -182,7 +182,7 @@ describe('root replacement with applyPatch', function() {
         op: 'add',
         path: '',
         value: 1
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(1);
     });
   });
@@ -197,7 +197,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'universe'
         }
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -214,7 +214,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'universe'
         }
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -233,7 +233,7 @@ describe('root replacement with applyPatch', function() {
             hello: 'universe'
           }
         ]
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -252,7 +252,7 @@ describe('root replacement with applyPatch', function() {
             hello: 'universe'
           }
         ]
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -267,7 +267,7 @@ describe('root replacement with applyPatch', function() {
         op: 'add',
         path: '',
         value: 1
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(1);
     });
     it('should `replace` with a primitive (on a json document of type array)', function() {
@@ -280,7 +280,7 @@ describe('root replacement with applyPatch', function() {
         op: 'replace',
         path: '',
         value: 1
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(1);
     });
   });
@@ -294,7 +294,7 @@ describe('root replacement with applyPatch', function() {
       var newObj = jsonpatch.applyPatch(obj, [{
         op: 'remove',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(null);
     });
     it('should `remove` root (on a json document of type object)', function() {
@@ -304,7 +304,7 @@ describe('root replacement with applyPatch', function() {
       var newObj = jsonpatch.applyPatch(obj, [{
         op: 'remove',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual(null);
     });
   });
@@ -318,7 +318,7 @@ describe('root replacement with applyPatch', function() {
         op: 'move',
         from: '/child',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `move` a child of type object to root (on a json document of type array)', function() {
@@ -329,7 +329,7 @@ describe('root replacement with applyPatch', function() {
         op: 'move',
         from: '/child/0',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `move` a child of type array to root (on a json document of type object)', function() {
@@ -340,7 +340,7 @@ describe('root replacement with applyPatch', function() {
         op: 'move',
         from: '/child',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([{ name: 'Charles' }]);
     });
   });
@@ -353,7 +353,7 @@ describe('root replacement with applyPatch', function() {
         op: 'copy',
         from: '/child',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `copy` a child of type object to root (on a json document of type array) - and return', function() {
@@ -364,7 +364,7 @@ describe('root replacement with applyPatch', function() {
         op: 'copy',
         from: '/child/0',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `copy` a child of type array to root (on a json document of type object) - and return', function() {
@@ -375,7 +375,7 @@ describe('root replacement with applyPatch', function() {
         op: 'copy',
         from: '/child',
         path: ''
-      }]).newDocument;
+      }]);
       expect(newObj).toEqual([{ name: 'Charles' }]);
     });
   });
@@ -390,7 +390,7 @@ describe('root replacement with applyPatch', function() {
         value: {
           hello: 'world'
         }
-      }]).newDocument;
+      }]);
       expect(result).toEqual(obj);
     });
     it('should `test` against root (on a json document of type object) - and return false', function() {
@@ -436,7 +436,7 @@ describe('core - using applyPatch', function() {
       op: 'add',
       path: '/bar',
       value: [1, 2, 3, 4]
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       foo: 1,
       baz: [
@@ -450,7 +450,7 @@ describe('core - using applyPatch', function() {
       op: 'add',
       path: '/baz/0/foo',
       value: 'world'
-    }]).newDocument;
+    }]);
     expect(newObj2).toEqual({
       foo: 1,
       baz: [
@@ -474,7 +474,7 @@ describe('core - using applyPatch', function() {
       op: 'add',
       path: '/bar',
       value: true
-    }]).newDocument;
+    }]);
     expect(newObj3).toEqual({
       foo: 1,
       baz: [
@@ -497,7 +497,7 @@ describe('core - using applyPatch', function() {
       op: 'add',
       path: '/bar',
       value: false
-    }]).newDocument;
+    }]);
     expect(newObj4).toEqual({
       foo: 1,
       baz: [
@@ -520,7 +520,7 @@ describe('core - using applyPatch', function() {
       op: 'add',
       path: '/bar',
       value: null
-    }]).newDocument;
+    }]);
     expect(newObj5).toEqual({
       foo: 1,
       baz: [
@@ -542,7 +542,7 @@ describe('core - using applyPatch', function() {
       value: {
         hello: 'universe'
       }
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       hello: 'universe'
     });
@@ -562,7 +562,7 @@ describe('core - using applyPatch', function() {
     var newObj = jsonpatch.applyPatch(obj, [{
       op: 'remove',
       path: '/bar'
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       foo: 1,
       baz: [
@@ -574,7 +574,7 @@ describe('core - using applyPatch', function() {
     var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'remove',
       path: '/baz/0/qux'
-    }]).newDocument;
+    }]);
     expect(newObj2).toEqual({
       foo: 1,
       baz: [{}]
@@ -593,7 +593,7 @@ describe('core - using applyPatch', function() {
       op: 'replace',
       path: '/foo',
       value: [1, 2, 3, 4]
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       foo: [1, 2, 3, 4],
       baz: [
@@ -606,7 +606,7 @@ describe('core - using applyPatch', function() {
       op: 'replace',
       path: '/baz/0/qux',
       value: 'world'
-    }]).newDocument;
+    }]);
     expect(newObj2).toEqual({
       foo: [1, 2, 3, 4],
       baz: [
@@ -626,7 +626,7 @@ describe('core - using applyPatch', function() {
       value: {
         hello: 'universe'
       }
-    }]).newDocument;
+    }]);
 
     expect(newObj).toEqual({
       hello: 'universe'
@@ -651,7 +651,7 @@ describe('core - using applyPatch', function() {
         value: {
           bar: [1, 2, 5, 4]
         }
-      }]).newDocument
+      }])
     ).toEqual(obj);
 
     expect(() =>
@@ -672,42 +672,42 @@ describe('core - using applyPatch', function() {
           c: null,
           a: 'a'
         }
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar',
         value: obj.bar
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/a',
         value: 'a'
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/b',
         value: 42
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/c',
         value: null
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/d',
         value: true
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(() =>
       jsonpatch.applyPatch(obj, [{
@@ -742,7 +742,7 @@ describe('core - using applyPatch', function() {
         value: {
           hello: 'world'
         }
-      }]).newDocument
+      }])
     ).toEqual(obj);
     expect(() =>
       jsonpatch.applyPatch(obj, [{
@@ -767,7 +767,7 @@ describe('core - using applyPatch', function() {
       op: 'move',
       from: '/foo',
       path: '/bar'
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       baz: [
         {
@@ -781,7 +781,7 @@ describe('core - using applyPatch', function() {
       op: 'move',
       from: '/baz/0/qux',
       path: '/baz/1'
-    }]).newDocument;
+    }]);
 
     expect(newObj2).toEqual({
       baz: [{}, 'hello'],
@@ -801,7 +801,7 @@ describe('core - using applyPatch', function() {
       op: 'move',
       from: '/location',
       path: ''
-    }]).newDocument;
+    }]);
 
     expect(newObj).toEqual({
       city: 'Vancouver'
@@ -822,7 +822,7 @@ describe('core - using applyPatch', function() {
       op: 'copy',
       from: '/foo',
       path: '/bar'
-    }]).newDocument;
+    }]);
 
     expect(newObj).toEqual({
       foo: 1,
@@ -838,7 +838,7 @@ describe('core - using applyPatch', function() {
       op: 'copy',
       from: '/baz/0/qux',
       path: '/baz/1'
-    }]).newDocument;
+    }]);
 
     expect(newObj2).toEqual({
       foo: 1,
@@ -863,7 +863,7 @@ describe('core - using applyPatch', function() {
       op: 'copy',
       from: '/location',
       path: ''
-    }]).newDocument;
+    }]);
     expect(newObj).toEqual({
       city: 'Vancouver'
     });
@@ -1002,7 +1002,7 @@ describe('core', function() {
           hello: 'universe'
         }
       }
-    ])[0].newDocument;
+    ]);
 
     expect(newObj).toEqual({
       hello: 'universe'
@@ -1103,7 +1103,7 @@ describe('core', function() {
           hello: 'universe'
         }
       }
-    ])[0].newDocument;
+    ]);
 
     expect(newObject).toEqual({
       hello: 'universe'
@@ -1131,8 +1131,8 @@ describe('core', function() {
             bar: [1, 2, 5, 4]
           }
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
 
     expect(() =>
       jsonpatch.applyPatch(obj, [
@@ -1156,8 +1156,8 @@ describe('core', function() {
             a: 'a'
           }
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
 
     expect(
       jsonpatch.applyPatch(obj, [
@@ -1166,8 +1166,8 @@ describe('core', function() {
           path: '/bar',
           value: obj.bar
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [
         {
@@ -1175,8 +1175,8 @@ describe('core', function() {
           path: '/bar/a',
           value: 'a'
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [
         {
@@ -1184,8 +1184,8 @@ describe('core', function() {
           path: '/bar/b',
           value: 42
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [
         {
@@ -1193,8 +1193,8 @@ describe('core', function() {
           path: '/bar/c',
           value: null
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(
       jsonpatch.applyPatch(obj, [
         {
@@ -1202,8 +1202,8 @@ describe('core', function() {
           path: '/bar/d',
           value: true
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(() =>
       jsonpatch.applyPatch(obj, [
         {
@@ -1243,8 +1243,8 @@ describe('core', function() {
             hello: 'world'
           }
         }
-      ])[0].test
-    ).toBe(true);
+      ])
+    ).toEqual(obj);
     expect(() =>
       jsonpatch.applyPatch(obj, [
         {
@@ -1311,7 +1311,7 @@ describe('core', function() {
         from: '/location',
         path: ''
       }
-    ])[0].newDocument;
+    ]);
 
     expect(newObj).toEqual({
       city: 'Vancouver'
@@ -1377,7 +1377,7 @@ describe('core', function() {
         from: '/location',
         path: ''
       }
-    ])[0].newDocument;
+    ]);
 
     expect(newObj).toEqual({
       city: 'Vancouver'
@@ -1412,119 +1412,6 @@ describe('core', function() {
     expect(obj1.foo).toBe(patch[0].value);
   });
 
-  describe('returning removed elements >', function() {
-    var obj;
-    beforeEach(function() {
-      obj = {
-        name: 'jack',
-        languages: ['c#', 'haskell', 'python'],
-        hobby: 'music'
-      };
-    });
-
-    it('return removed element when removing from object', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'remove',
-          path: '/name'
-        }
-      ]);
-      expect(result[0].removed).toEqual('jack');
-    });
-    it('return removed element when replacing in object', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'replace',
-          path: '/name',
-          value: 'john'
-        }
-      ]);
-      expect(result[0].removed).toEqual('jack');
-    });
-    it('return removed element when moving in object', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'move',
-          from: '/name',
-          path: '/hobby'
-        }
-      ]);
-      expect(result[0].removed).toEqual('music');
-    });
-
-    it('return removed element when removing from array', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'remove',
-          path: '/languages/1'
-        }
-      ]);
-      expect(result[0].removed).toEqual('haskell');
-    });
-    it('return removed element when replacing in array', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'replace',
-          path: '/languages/1',
-          value: 'erlang'
-        }
-      ]);
-      expect(result[0].removed).toEqual('haskell');
-    });
-    it('return removed element when moving in array', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'move',
-          from: '/hobby',
-          path: '/languages/1'
-        }
-      ]);
-      expect(result[0].removed).toEqual('haskell');
-    });
-    it('return root when removing root', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'remove',
-          path: ''
-        }
-      ]);
-      expect(result[0].removed).toEqual({
-        name: 'jack',
-        languages: ['c#', 'haskell', 'python'],
-        hobby: 'music'
-      });
-    });
-    it('return root when replacing root', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'replace',
-          path: '',
-          value: {
-            newRoot: 'yes'
-          }
-        }
-      ]);
-      expect(result[0].removed).toEqual({
-        name: 'jack',
-        languages: ['c#', 'haskell', 'python'],
-        hobby: 'music'
-      });
-    });
-    it('return root when moving to root', function() {
-      var result = jsonpatch.applyPatch(obj, [
-        {
-          op: 'move',
-          from: '/languages',
-          path: ''
-        }
-      ]);
-      expect(result[0].removed).toEqual({
-        name: 'jack',
-        languages: ['c#', 'haskell', 'python'],
-        hobby: 'music'
-      });
-    });
-  });
 });
 
 describe('undefined - JS to JSON projection / JSON to JS extension', function() {
@@ -1691,8 +1578,8 @@ describe('undefined - JS to JSON projection / JSON to JS extension', function() 
             path: '/not',
             value: undefined
           }
-        ])[0].test
-      ).toBe(true);
+        ])
+      ).toEqual(obj);
     });
     it('test on array element set to `undefined`', function() {
       obj = {
@@ -1724,8 +1611,8 @@ describe('undefined - JS to JSON projection / JSON to JS extension', function() 
             path: '/bar/2',
             value: undefined
           }
-        ])[0].test
-      ).toBe(true);
+        ])
+      ).toEqual(obj);
     });
 
     it('move of `undefined`', function() {
