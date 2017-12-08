@@ -1,7 +1,5 @@
+const jsonpatch = require('./../../lib/core');
 var obj;
-if (typeof jsonpatch === 'undefined') {
-  jsonpatch = require('./../../lib/core');
-}
 
 describe('jsonpatch.getValueByPointer', function() {
   it('should retrieve values by JSON pointer from tree - deep object', function() {
@@ -488,12 +486,12 @@ describe('core - using applyOperation', function() {
       ],
       bar: [1, 2, 3, 4]
     });
-    var newObj = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyOperation(newObj, {
       op: 'add',
       path: '/baz/0/foo',
       value: 'world'
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj2).toEqual({
       foo: 1,
       baz: [
         {
@@ -512,12 +510,12 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj3 = jsonpatch.applyOperation(obj, {
       op: 'add',
       path: '/bar',
       value: true
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj3).toEqual({
       foo: 1,
       baz: [
         {
@@ -535,12 +533,12 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj4 = jsonpatch.applyOperation(obj, {
       op: 'add',
       path: '/bar',
       value: false
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj4).toEqual({
       foo: 1,
       baz: [
         {
@@ -558,12 +556,12 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj5 = jsonpatch.applyOperation(obj, {
       op: 'add',
       path: '/bar',
       value: null
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj5).toEqual({
       foo: 1,
       baz: [
         {
@@ -613,11 +611,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     });
-    var newObj = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyOperation(newObj, {
       op: 'remove',
       path: '/baz/0/qux'
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj2).toEqual({
       foo: 1,
       baz: [{}]
     });
@@ -644,12 +642,12 @@ describe('core - using applyOperation', function() {
         }
       ]
     });
-    var newObj = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyOperation(newObj, {
       op: 'replace',
       path: '/baz/0/qux',
       value: 'world'
     }).newDocument;
-    expect(newObj).toEqual({
+    expect(newObj2).toEqual({
       foo: [1, 2, 3, 4],
       baz: [
         {
@@ -819,13 +817,13 @@ describe('core - using applyOperation', function() {
       bar: 1
     });
 
-    var newObj = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyOperation(newObj, {
       op: 'move',
       from: '/baz/0/qux',
       path: '/baz/1'
     }).newDocument;
 
-    expect(newObj).toEqual({
+    expect(newObj2).toEqual({
       baz: [{}, 'hello'],
       bar: 1
     });
@@ -876,13 +874,13 @@ describe('core - using applyOperation', function() {
       bar: 1
     });
 
-    var newObj = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyOperation(newObj, {
       op: 'copy',
       from: '/baz/0/qux',
       path: '/baz/1'
     }).newDocument;
 
-    expect(newObj).toEqual({
+    expect(newObj2).toEqual({
       foo: 1,
       baz: [
         {
@@ -1036,7 +1034,7 @@ describe('core', function() {
     var obj = {
       hello: 'world'
     };
-    newObj = jsonpatch.applyPatch(obj, [
+    var newObj = jsonpatch.applyPatch(obj, [
       {
         op: 'add',
         path: '',
@@ -1347,7 +1345,7 @@ describe('core', function() {
         city: 'Vancouver'
       }
     };
-    newObj = jsonpatch.applyPatch(obj, [
+    var newObj = jsonpatch.applyPatch(obj, [
       {
         op: 'move',
         from: '/location',
@@ -1413,7 +1411,7 @@ describe('core', function() {
         city: 'Vancouver'
       }
     };
-    newObj = jsonpatch.applyPatch(obj, [
+    var newObj = jsonpatch.applyPatch(obj, [
       {
         op: 'copy',
         from: '/location',
