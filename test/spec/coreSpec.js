@@ -40,7 +40,7 @@ describe('jsonpatch.getValueByPointer', function() {
     }]);
   });
 });
-describe('root replacement with applyOperation', function() {
+describe('root replacement with applyPatch', function() {
   describe('_get operation', function () {
     it('should get root value', function() {
       var obj = [{
@@ -49,7 +49,7 @@ describe('root replacement with applyOperation', function() {
 
       var patch = {op: '_get', path: ''};
 
-      jsonpatch.applyOperation(obj, patch);
+      jsonpatch.applyPatch(obj, [patch]);
 
       expect(patch.value).toEqual([{
         people: [{name: 'Marilyn'}, {name: 'Monroe'}]
@@ -62,7 +62,7 @@ describe('root replacement with applyOperation', function() {
 
       var patch = {op: '_get', path: '/people/1/name'};
 
-      jsonpatch.applyOperation(obj, patch);
+      jsonpatch.applyPatch(obj, [patch]);
 
       expect(patch.value).toEqual('Monroe');
     });
@@ -72,13 +72,13 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: {
           hello: 'universe'
         }
-      }).newDocument;
+      }]).newDocument;
 
       expect(newObj).toEqual({
         hello: 'universe'
@@ -88,13 +88,13 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: {
           hello: 'universe'
         }
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -105,13 +105,13 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: {
           hello: 'universe'
         }
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -122,7 +122,7 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: [
@@ -130,7 +130,7 @@ describe('root replacement with applyOperation', function() {
             hello: 'universe'
           }
         ]
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -143,7 +143,7 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: [
@@ -151,7 +151,7 @@ describe('root replacement with applyOperation', function() {
             hello: 'universe'
           }
         ]
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -161,11 +161,11 @@ describe('root replacement with applyOperation', function() {
      it('should `add` an array prop', function() {
       var obj = [];
 
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '/prop',
         value: 'arrayProp'
-      }).newDocument;
+      }]).newDocument;
 
       expect(newObj.prop).toEqual('arrayProp');
     });
@@ -173,11 +173,11 @@ describe('root replacement with applyOperation', function() {
       var obj = [];
       obj.prop = 'oldArrayProp';
 
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '/prop',
         value: 'arrayProp'
-      }).newDocument;
+      }]).newDocument;
 
       expect(newObj.prop).toEqual('arrayProp');
     });
@@ -185,7 +185,7 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: [
@@ -193,7 +193,7 @@ describe('root replacement with applyOperation', function() {
             hello: 'universe'
           }
         ]
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -204,11 +204,11 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: 1
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(1);
     });
     it('should `add` with a primitive (on a json document of type array) - and return', function() {
@@ -217,11 +217,11 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: 1
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(1);
     });
   });
@@ -230,13 +230,13 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '',
         value: {
           hello: 'universe'
         }
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -247,13 +247,13 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '',
         value: {
           hello: 'universe'
         }
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({
         hello: 'universe'
       });
@@ -264,7 +264,7 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '',
         value: [
@@ -272,7 +272,7 @@ describe('root replacement with applyOperation', function() {
             hello: 'universe'
           }
         ]
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -283,7 +283,7 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '',
         value: [
@@ -291,7 +291,7 @@ describe('root replacement with applyOperation', function() {
             hello: 'universe'
           }
         ]
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([
         {
           hello: 'universe'
@@ -302,11 +302,11 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'add',
         path: '',
         value: 1
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(1);
     });
     it('should `replace` with a primitive (on a json document of type array)', function() {
@@ -315,11 +315,11 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'replace',
         path: '',
         value: 1
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(1);
     });
   });
@@ -330,20 +330,20 @@ describe('root replacement with applyOperation', function() {
           hello: 'world'
         }
       ];
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'remove',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(null);
     });
     it('should `remove` root (on a json document of type object)', function() {
       var obj = {
         hello: 'world'
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'remove',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual(null);
     });
   });
@@ -353,33 +353,33 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         child: { name: 'Charles' }
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'move',
         from: '/child',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `move` a child of type object to root (on a json document of type array)', function() {
       var obj = {
         child: [{ name: 'Charles' }]
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'move',
         from: '/child/0',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `move` a child of type array to root (on a json document of type object)', function() {
       var obj = {
         child: [{ name: 'Charles' }]
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'move',
         from: '/child',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([{ name: 'Charles' }]);
     });
   });
@@ -388,33 +388,33 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         child: { name: 'Charles' }
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'copy',
         from: '/child',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `copy` a child of type object to root (on a json document of type array) - and return', function() {
       var obj = {
         child: [{ name: 'Charles' }]
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'copy',
         from: '/child/0',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual({ name: 'Charles' });
     });
     it('should `copy` a child of type array to root (on a json document of type object) - and return', function() {
       var obj = {
         child: [{ name: 'Charles' }]
       };
-      var newObj = jsonpatch.applyOperation(obj, {
+      var newObj = jsonpatch.applyPatch(obj, [{
         op: 'copy',
         from: '/child',
         path: ''
-      }).newDocument;
+      }]).newDocument;
       expect(newObj).toEqual([{ name: 'Charles' }]);
     });
   });
@@ -423,13 +423,13 @@ describe('root replacement with applyOperation', function() {
       var obj = {
         hello: 'world'
       };
-      var result = jsonpatch.applyOperation(obj, {
+      var result = jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '',
         value: {
           hello: 'world'
         }
-      }).newDocument;
+      }]).newDocument;
       expect(result).toEqual(obj);
     });
     it('should `test` against root (on a json document of type object) - and return false', function() {
@@ -437,11 +437,11 @@ describe('root replacement with applyOperation', function() {
         hello: 'world'
       };
       expect(() =>
-        jsonpatch.applyOperation(obj, {
+        jsonpatch.applyPatch(obj, [{
           op: 'test',
           path: '',
           value: 1
-        })
+        }])
       ).toThrow();
     });
     it('should `test` against root (on a json document of type array) - and return false', function() {
@@ -452,17 +452,17 @@ describe('root replacement with applyOperation', function() {
       ];
 
       expect(() =>
-        jsonpatch.applyOperation(obj, {
+        jsonpatch.applyPatch(obj, [{
           op: 'test',
           path: '',
           value: 1
-        })
+        }])
       ).toThrow();
     });
   });
 });
 /* this is just a copy-paste of original specs, but with using applyOperation, to test for non-root patches */
-describe('core - using applyOperation', function() {
+describe('core - using applyPatch', function() {
   it('should apply add', function() {
     obj = {
       foo: 1,
@@ -472,11 +472,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'add',
       path: '/bar',
       value: [1, 2, 3, 4]
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       foo: 1,
       baz: [
@@ -486,11 +486,11 @@ describe('core - using applyOperation', function() {
       ],
       bar: [1, 2, 3, 4]
     });
-    var newObj2 = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'add',
       path: '/baz/0/foo',
       value: 'world'
-    }).newDocument;
+    }]).newDocument;
     expect(newObj2).toEqual({
       foo: 1,
       baz: [
@@ -510,11 +510,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj3 = jsonpatch.applyOperation(obj, {
+    var newObj3 = jsonpatch.applyPatch(obj, [{
       op: 'add',
       path: '/bar',
       value: true
-    }).newDocument;
+    }]).newDocument;
     expect(newObj3).toEqual({
       foo: 1,
       baz: [
@@ -533,11 +533,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj4 = jsonpatch.applyOperation(obj, {
+    var newObj4 = jsonpatch.applyPatch(obj, [{
       op: 'add',
       path: '/bar',
       value: false
-    }).newDocument;
+    }]).newDocument;
     expect(newObj4).toEqual({
       foo: 1,
       baz: [
@@ -556,11 +556,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj5 = jsonpatch.applyOperation(obj, {
+    var newObj5 = jsonpatch.applyPatch(obj, [{
       op: 'add',
       path: '/bar',
       value: null
-    }).newDocument;
+    }]).newDocument;
     expect(newObj5).toEqual({
       foo: 1,
       baz: [
@@ -576,13 +576,13 @@ describe('core - using applyOperation', function() {
     var obj = {
       hello: 'world'
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'add',
       path: '',
       value: {
         hello: 'universe'
       }
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       hello: 'universe'
     });
@@ -599,10 +599,10 @@ describe('core - using applyOperation', function() {
       bar: [1, 2, 3, 4]
     };
 
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'remove',
       path: '/bar'
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       foo: 1,
       baz: [
@@ -611,10 +611,10 @@ describe('core - using applyOperation', function() {
         }
       ]
     });
-    var newObj2 = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'remove',
       path: '/baz/0/qux'
-    }).newDocument;
+    }]).newDocument;
     expect(newObj2).toEqual({
       foo: 1,
       baz: [{}]
@@ -629,11 +629,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'replace',
       path: '/foo',
       value: [1, 2, 3, 4]
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       foo: [1, 2, 3, 4],
       baz: [
@@ -642,11 +642,11 @@ describe('core - using applyOperation', function() {
         }
       ]
     });
-    var newObj2 = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'replace',
       path: '/baz/0/qux',
       value: 'world'
-    }).newDocument;
+    }]).newDocument;
     expect(newObj2).toEqual({
       foo: [1, 2, 3, 4],
       baz: [
@@ -660,13 +660,13 @@ describe('core - using applyOperation', function() {
     var obj = {
       hello: 'world'
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'replace',
       path: '',
       value: {
         hello: 'universe'
       }
-    }).newDocument;
+    }]).newDocument;
 
     expect(newObj).toEqual({
       hello: 'universe'
@@ -685,25 +685,25 @@ describe('core - using applyOperation', function() {
       }
     };
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/foo',
         value: {
           bar: [1, 2, 5, 4]
         }
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
 
     expect(() =>
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/foo',
         value: 1
-      })
+      }])
     ).toThrow();
 
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar',
         value: {
@@ -712,52 +712,52 @@ describe('core - using applyOperation', function() {
           c: null,
           a: 'a'
         }
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar',
         value: obj.bar
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/a',
         value: 'a'
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/b',
         value: 42
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/c',
         value: null
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/d',
         value: true
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(() =>
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar/d',
         value: false
-      })
+      }])
     ).toThrow();
     expect(() =>
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '/bar',
         value: {
@@ -767,7 +767,7 @@ describe('core - using applyOperation', function() {
           a: 'a',
           foo: 'bar'
         }
-      })
+      }])
     ).toThrow();
   });
 
@@ -776,20 +776,20 @@ describe('core - using applyOperation', function() {
       hello: 'world'
     };
     expect(
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '',
         value: {
           hello: 'world'
         }
-      }).newDocument
+      }]).newDocument
     ).toEqual(obj);
     expect(() =>
-      jsonpatch.applyOperation(obj, {
+      jsonpatch.applyPatch(obj, [{
         op: 'test',
         path: '',
         value: 1
-      })
+      }])
     ).toThrow();
   });
 
@@ -803,11 +803,11 @@ describe('core - using applyOperation', function() {
       ]
     };
 
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'move',
       from: '/foo',
       path: '/bar'
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       baz: [
         {
@@ -817,11 +817,11 @@ describe('core - using applyOperation', function() {
       bar: 1
     });
 
-    var newObj2 = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'move',
       from: '/baz/0/qux',
       path: '/baz/1'
-    }).newDocument;
+    }]).newDocument;
 
     expect(newObj2).toEqual({
       baz: [{}, 'hello'],
@@ -837,11 +837,11 @@ describe('core - using applyOperation', function() {
         city: 'Vancouver'
       }
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'move',
       from: '/location',
       path: ''
-    }).newDocument;
+    }]).newDocument;
 
     expect(newObj).toEqual({
       city: 'Vancouver'
@@ -858,11 +858,11 @@ describe('core - using applyOperation', function() {
       ]
     };
 
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'copy',
       from: '/foo',
       path: '/bar'
-    }).newDocument;
+    }]).newDocument;
 
     expect(newObj).toEqual({
       foo: 1,
@@ -874,11 +874,11 @@ describe('core - using applyOperation', function() {
       bar: 1
     });
 
-    var newObj2 = jsonpatch.applyOperation(newObj, {
+    var newObj2 = jsonpatch.applyPatch(newObj, [{
       op: 'copy',
       from: '/baz/0/qux',
       path: '/baz/1'
-    }).newDocument;
+    }]).newDocument;
 
     expect(newObj2).toEqual({
       foo: 1,
@@ -899,11 +899,11 @@ describe('core - using applyOperation', function() {
         city: 'Vancouver'
       }
     };
-    var newObj = jsonpatch.applyOperation(obj, {
+    var newObj = jsonpatch.applyPatch(obj, [{
       op: 'copy',
       from: '/location',
       path: ''
-    }).newDocument;
+    }]).newDocument;
     expect(newObj).toEqual({
       city: 'Vancouver'
     });
