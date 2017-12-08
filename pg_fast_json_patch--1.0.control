@@ -1,0 +1,6 @@
+directory = 'extension'
+default_version = '1.0'
+comment = 'PG RFC-6902 JSON Patch Implementation'
+requires = 'plv8_modules'
+superuser = false
+relocatable = true
